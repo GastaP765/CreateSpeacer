@@ -1,6 +1,6 @@
 import maya.cmds as mc
 
-def create():
+def Preparation():
 	trs = list(range(0))
 	slc = mc.ls(sl=True)
 	StoH = mc.radioCollection(rc1, q=True, select=True)
@@ -12,7 +12,7 @@ def create():
 			trs.append(mc.getAttr('{}.wm'.format(slc[i])))
 
 	elif StoH == 'hieb':
-		par = mc.listRelatives('{}'.format(slc[0]), ad=True)
+		par = mc.listRelatives('{}'.format(slc[0]), ad=True, typ=('transform', 'joint'))
 		par.append(slc[0])
 		slc = list(range(0))
 		cnt = len(par)
@@ -23,12 +23,21 @@ def create():
 
 	for i in range(cnt):
 		par = mc.listRelatives('{}'.format(slc[i]), p=True)
+		if  par is not None:
+			if '{}_space'.format(slc[i]) == par[0]:
+				continue
 		if JtoT == 'trsb':
 			spc = mc.createNode('transform', n='{}_space'.format(slc[i]))
 		elif JtoT == 'jntb':
-			rad = mc.getAttr('{}.radius'.format(slc[i]))
-			spc = mc.createNode('joint', n='{}_space'.format(slc[i]))
-			mc.setAttr('{}.radius'.format(spc), rad*1.5)
+			typ = mc.ls('{}'.format(slc[i]), st=True)
+			if typ[1] == 'joint':
+				rad = mc.getAttr('{}.radius'.format(slc[i]))
+				spc = mc.createNode('joint', n='{}_space'.format(slc[i]))
+				mc.setAttr('{}.radius'.format(spc), rad*1.5)
+			elif typ[1] == 'transform':
+				spc = mc.createNode('joint', n='{}_space'.format(slc[i]))
+				mc.setAttr('{}.radius'.format(spc), 0.8)
+			
 		mc.setAttr('{}.t'.format(spc), trs[i][12], trs[i][13], trs[i][14])
 		if  par is not None:
 			mc.parent(spc, par[0])
@@ -36,13 +45,27 @@ def create():
 		mc.setAttr('{}.t'.format(slc[i]), 0, 0, 0)
 
 
-win = mc.window(t='CreateSpacer', widthHeight=(200,200))
-mc.columnLayout()
+if mc.window("CreateSpacer", exists=True):
+	mc.deleteUI("CreateSpacer")
+
+createWin = mc.window("CreateSpacer", t="CreateSpacer", w=200, h=130)
+
+mc.columnLayout(adj=True,h=125)
+
+mc.frameLayout(label='Type Select')
+mc.rowLayout(numberOfColumns=2)
 rc1 = mc.radioCollection()
 rb1 = mc.radioButton('selb', l='select', select=True)
 rb2 = mc.radioButton('hieb', l='hierachy')
+mc.setParent('..')
+
+mc.frameLayout(label='Node Select')
+mc.rowLayout(numberOfColumns=2)
 rc2 = mc.radioCollection()
 rb3 = mc.radioButton('trsb', l='Transform', select=True)
 rb4 = mc.radioButton('jntb', l='joint')
-mc.button(l='create', c='create()')
-mc.showWindow(win)
+mc.setParent('..')
+
+mc.button(l='create', c='Preparation()')
+
+mc.showWindow(createWin)
