@@ -33,7 +33,7 @@ def Preparation():
 			if typ[1] == 'joint':
 				rad = mc.getAttr('{}.radius'.format(slc[i]))
 				spc = mc.createNode('joint', n='{}_space'.format(slc[i]))
-				mc.setAttr('{}.radius'.format(spc), rad*1.5)
+				mc.setAttr('{}.radius'.format(spc))
 			elif typ[1] == 'transform':
 				spc = mc.createNode('joint', n='{}_space'.format(slc[i]))
 				mc.setAttr('{}.radius'.format(spc), 0.8)
