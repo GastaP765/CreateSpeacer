@@ -48,7 +48,8 @@ def Preparation():
 if mc.window("CreateSpacer", exists=True):
 	mc.deleteUI("CreateSpacer")
 
-createWin = mc.window("CreateSpacer", t="CreateSpacer", w=200, h=130)
+createWin = mc.window("CreateSpacer", t="CreateSpacer", w=200, h=135)
+mc.window("CreateSpacer", e=True, w=200, h=135)
 
 mc.columnLayout(adj=True,h=125)
 
